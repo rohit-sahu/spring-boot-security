@@ -15,13 +15,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+	private static final String OAUTH2_ENDPOINTS = "/oauth/**";
+	private static final String OAUTH2_TOKEN = "/oauth/token";
+	private static final String OAUTH2_CHECK_TOKEN = "/oauth/check_token";
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and()
-				.authorizeRequests().antMatchers("/oauth/token").permitAll().anyRequest().authenticated();
+				.authorizeRequests().antMatchers(OAUTH2_ENDPOINTS, OAUTH2_TOKEN, OAUTH2_CHECK_TOKEN).permitAll().anyRequest().authenticated();
 	}
 
 	@Override
@@ -30,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.passwordEncoder(passwordEncoder)
 				.withUser("john")
 				.password(passwordEncoder.encode("123"))
-				.roles("USER");
+				.roles("USER", "ADMIN");
 	}
 
 	@Bean
